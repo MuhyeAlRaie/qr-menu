@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Menu - Restaurant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="text-center py-4">
+            <h1 class="display-4 fw-bold">🍽️ Our Menu</h1>
+            <p class="lead text-white-50">Discover our delicious offerings</p>
+            <div class="header-buttons mt-3">
+                <button class="btn btn-warning btn-lg me-3" id="quick-request-btn">
+                    ⚡ Quick Request
+                </button>
+                <button class="btn btn-primary btn-lg" id="cart-btn">
+                    🛒 <span id="cart-count">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 3D Category Carousel -->
+        <section id="menu-categories" class="mb-5">
+            <!-- 3D Carousel will be inserted here by JavaScript -->
+        </section>
+
+        <!-- Category Navigation -->
+        <nav class="category-nav mb-4" id="category-navigation">
+            <!-- Category buttons will be inserted here by JavaScript -->
+        </nav>
+
+        <!-- Menu Items -->
+        <main id="menu-items" class="row">
+            <!-- Menu items will be loaded here by JavaScript -->
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+    <!-- Table Number Modal -->
+    <div class="modal fade" id="tableNumberModal" tabindex="-1" aria-labelledby="tableNumberModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tableNumberModalLabel">🏷️ Enter Table Number</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-3">Please enter your table number to continue:</p>
+                    <div class="mb-3">
+                        <input type="number" class="form-control form-control-lg text-center" id="tableNumberInput" 
+                               placeholder="Table Number" min="1" max="100" required>
+                    </div>
+                    <small class="text-muted">You can find your table number on the QR code or table tent.</small>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="setTableNumber()">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Request Modal -->
+    <div class="modal fade" id="quickRequestModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">⚡ Quick Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">Select a quick service item:</p>
+                    <div class="quick-request-items">
+                        <button class="btn btn-outline-primary btn-lg w-100 mb-3 quick-item-btn" data-item="Hookah Coal">
+                            🔥 Hookah Coal
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg w-100 mb-3 quick-item-btn" data-item="Extra Napkins">
+                            🧻 Extra Napkins
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg w-100 mb-3 quick-item-btn" data-item="Water Refill">
+                            💧 Water Refill
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg w-100 mb-3 quick-item-btn" data-item="Check Please">
+                            💳 Check Please
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg w-100 mb-3 quick-item-btn" data-item="Clean Table">
+                            🧽 Clean Table
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg w-100 mb-3 quick-item-btn" data-item="Call Waiter">
+                            🙋 Call Waiter
+                        </button>
+                    </div>
+                    <div class="custom-request mt-4">
+                        <label class="form-label">Custom Request:</label>
+                        <textarea class="form-control" id="custom-request-text" rows="3" placeholder="Type your custom request here..."></textarea>
+                        <button class="btn btn-success w-100 mt-3" id="send-custom-request">
+                            📤 Send Custom Request
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Request Confirmation Modal -->
+    <div class="modal fade" id="quickRequestConfirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">✅ Request Sent</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-3">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Sending...</span>
+                        </div>
+                    </div>
+                    <h4 class="text-success">Request Sent Successfully!</h4>
+                    <p class="text-muted">Your request has been sent to the staff. They will assist you shortly.</p>
+                    <div class="alert alert-info">
+                        <strong>Request:</strong> <span id="sent-request-text"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
