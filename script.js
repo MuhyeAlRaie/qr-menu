@@ -1,7 +1,7 @@
 // QR Menu JavaScript
 class QRMenu {
     constructor() {
-        this.apiUrl = 'https://script.google.com/macros/s/AKfycbwYOUR_SCRIPT_ID_HERE/exec';
+        this.apiUrl = 'https://script.google.com/macros/s/AKfycbxzErxBpsUuqxMEFPI9xWxurkijPeK0Opio8llZ5TqoXH9Nzk6WoaFleNBUvLWUstM9aQ/exec';
         this.categories = [
             'Hot Drinks', 'Cold Drinks', 'Frappe', 'Refresher', 
             'Smoothies', 'Mojito', 'Soft Drinks', 'Milk Shake', 
@@ -464,22 +464,6 @@ class QRMenu {
     hideLoading() {
         this.isLoading = false;
     }
-}
-
-// Initialize the QR Menu when the page loads
-let qrMenu;
-document.addEventListener('DOMContentLoaded', () => {
-    qrMenu = new QRMenu();
-});
-
-// Auto-rotate carousel every 5 seconds
-setInterval(() => {
-    if (qrMenu && !qrMenu.isLoading) {
-        qrMenu.rotateCarousel(1);
-    }
-}, 5000);
-
-
     // Quick Request functionality
     setupQuickRequest() {
         const quickRequestBtn = document.getElementById('quick-request-btn');
@@ -598,4 +582,17 @@ setInterval(() => {
         localStorage.setItem('cashRegisterNotifications', JSON.stringify(notifications.slice(0, 50)));
     }
 }
+
+// Initialize the QR Menu when the page loads
+let qrMenu;
+document.addEventListener('DOMContentLoaded', () => {
+    qrMenu = new QRMenu();
+});
+
+// Auto-rotate carousel every 5 seconds
+setInterval(() => {
+    if (qrMenu && !qrMenu.isLoading) {
+        qrMenu.rotateCarousel(1);
+    }
+}, 5000);
 

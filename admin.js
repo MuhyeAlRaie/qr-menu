@@ -1,7 +1,7 @@
 // Admin Panel JavaScript
 class AdminPanel {
     constructor() {
-        this.apiUrl = 'https://script.google.com/macros/s/AKfycbwYOUR_SCRIPT_ID_HERE/exec';
+        this.apiUrl = 'https://script.google.com/macros/s/AKfycbxzErxBpsUuqxMEFPI9xWxurkijPeK0Opio8llZ5TqoXH9Nzk6WoaFleNBUvLWUstM9aQ/exec';
         this.menuData = [];
         this.ordersData = [];
         this.currentSection = 'dashboard';
