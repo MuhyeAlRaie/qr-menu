@@ -1,7 +1,7 @@
 // Admin Panel JavaScript
 class AdminPanel {
     constructor() {
-        this.apiUrl = 'https://script.google.com/macros/s/AKfycbyHkAU-eedRJtC1dYqnEm6tGUkqfhDNCHTDnCeuLoh565M1lreCoC96FIIXfrA39_Qr9A/exec';
+        this.apiUrl = 'https://script.google.com/macros/s/AKfycbyeNom3iTnZ-1YwVFalozrt6bAw487sy5eifmiuMbXIesULfeErYBNk97WzsZiltf2EJg/exec';
         this.menuData = [];
         this.ordersData = [];
         this.currentSection = 'dashboard';
@@ -132,18 +132,17 @@ class AdminPanel {
         try {
             // For demo purposes, we'll use sample data
             // In production, uncomment the API call below
-            
             const response = await fetch(`${this.apiUrl}?action=getMenu`);
             const data = await response.json();
             this.menuData = data.success ? data.data : [];
             
             
             // Sample data for demonstration
-            // this.menuData = this.generateSampleMenuData();
+            this.menuData = this.generateSampleMenuData();
             
         } catch (error) {
             console.error('Error loading menu data:', error);
-            // this.menuData = this.generateSampleMenuData();
+            this.menuData = this.generateSampleMenuData();
         }
     }
 
@@ -158,11 +157,11 @@ class AdminPanel {
             
             
             // Sample data for demonstration
-            // this.ordersData = this.generateSampleOrdersData();
+            this.ordersData = this.generateSampleOrdersData();
             
         } catch (error) {
             console.error('Error loading orders data:', error);
-            // this.ordersData = this.generateSampleOrdersData();
+            this.ordersData = this.generateSampleOrdersData();
         }
     }
 
@@ -173,28 +172,28 @@ class AdminPanel {
             'Dessert', 'Food', 'Hookah'
         ];
         
-        // const sampleItems = [];
-        // categories.forEach((category, categoryIndex) => {
-        //     for (let i = 1; i <= 5; i++) {
-        //         sampleItems.push({
-        //             id: `${categoryIndex + 1}_${i}`,
-        //             category: category,
-        //             name: `${category} Item ${i}`,
-        //             description: `Delicious ${category.toLowerCase()} item with amazing flavors`,
-        //             ingredients: 'Premium ingredients, Fresh herbs, Special blend',
-        //             price: (Math.random() * 10 + 3).toFixed(2),
-        //             sizes: JSON.stringify({
-        //                 'Small': (Math.random() * 5 + 3).toFixed(2),
-        //                 'Medium': (Math.random() * 7 + 5).toFixed(2),
-        //                 'Large': (Math.random() * 10 + 7).toFixed(2)
-        //             }),
-        //             image: `https://picsum.photos/300/200?random=${categoryIndex * 5 + i}`,
-        //             available: Math.random() > 0.1 // 90% available
-        //         });
-        //     }
-        // });
+        const sampleItems = [];
+        categories.forEach((category, categoryIndex) => {
+            for (let i = 1; i <= 5; i++) {
+                sampleItems.push({
+                    id: `${categoryIndex + 1}_${i}`,
+                    category: category,
+                    name: `${category} Item ${i}`,
+                    description: `Delicious ${category.toLowerCase()} item with amazing flavors`,
+                    ingredients: 'Premium ingredients, Fresh herbs, Special blend',
+                    price: (Math.random() * 10 + 3).toFixed(2),
+                    sizes: JSON.stringify({
+                        'Small': (Math.random() * 5 + 3).toFixed(2),
+                        'Medium': (Math.random() * 7 + 5).toFixed(2),
+                        'Large': (Math.random() * 10 + 7).toFixed(2)
+                    }),
+                    image: `https://picsum.photos/300/200?random=${categoryIndex * 5 + i}`,
+                    available: Math.random() > 0.1 // 90% available
+                });
+            }
+        });
         
-        // return sampleItems;
+        return sampleItems;
     }
 
     generateSampleOrdersData() {
@@ -596,7 +595,7 @@ class AdminPanel {
             }
 
             // In production, sync with Google Sheets
-            await this.syncMenuToSheets();
+            // await this.syncMenuToSheets();
 
             // Close modal and refresh view
             bootstrap.Modal.getInstance(document.getElementById('itemModal')).hide();
@@ -625,7 +624,7 @@ class AdminPanel {
             this.renderMenuItems();
             
             // In production, sync with Google Sheets
-            await this.syncMenuToSheets();
+             await this.syncMenuToSheets();
         }
     }
 
@@ -636,7 +635,7 @@ class AdminPanel {
             this.updateStatistics();
             
             // In production, sync with Google Sheets
-            await this.syncMenuToSheets();
+             await this.syncMenuToSheets();
         }
     }
 
@@ -647,7 +646,7 @@ class AdminPanel {
             this.renderOrders();
             
             // In production, sync with Google Sheets
-            await this.syncOrderToSheets(order);
+             await this.syncOrderToSheets(order);
         }
     }
 

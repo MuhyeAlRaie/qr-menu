@@ -1,7 +1,7 @@
 // QR Menu JavaScript
 class QRMenu {
     constructor() {
-        this.apiUrl = 'https://script.google.com/macros/s/AKfycbyHkAU-eedRJtC1dYqnEm6tGUkqfhDNCHTDnCeuLoh565M1lreCoC96FIIXfrA39_Qr9A/exec';
+        this.apiUrl = 'https://script.google.com/macros/s/AKfycbyeNom3iTnZ-1YwVFalozrt6bAw487sy5eifmiuMbXIesULfeErYBNk97WzsZiltf2EJg/exec';
         this.categories = [
             'Hot Drinks', 'Cold Drinks', 'Frappe', 'Refresher', 
             'Smoothies', 'Mojito', 'Soft Drinks', 'Milk Shake', 
@@ -26,7 +26,7 @@ class QRMenu {
         this.create3DCarousel();
         this.createCategoryNavigation();
         this.loadMenuItems();
-        // this.setupCart();
+        this.setupCart();
         this.hideLoading();
     }
 
@@ -150,16 +150,16 @@ class QRMenu {
         try {
             // For demo purposes, we'll use sample data
             // In production, uncomment the API call below
-            const response = await fetch(`${this.apiUrl}?action=getMenu`);
-            const data = await response.json();
-            this.menuData = data.success ? data.data : [];
+             const response = await fetch(`${this.apiUrl}?action=getMenu`);
+             const data = await response.json();
+             this.menuData = data.success ? data.data : [];
             
             // Sample data for demonstration
-            // this.menuData = this.generateSampleData();
+            this.menuData = this.generateSampleData();
             
         } catch (error) {
             console.error('Error loading menu data:', error);
-            // this.menuData = this.generateSampleData();
+            this.menuData = this.generateSampleData();
         }
         this.hideLoading();
     }
@@ -437,7 +437,7 @@ class QRMenu {
         try {
             // For demo purposes, we'll simulate the order
             // In production, uncomment the API call below
-           
+            
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
@@ -449,11 +449,11 @@ class QRMenu {
             
             
             // Simulated response
-            // const result = {
-            //     success: true,
-            //     orderId: 'ORD' + Date.now(),
-            //     tableNumber: this.currentTableNumber
-            // };
+            const result = {
+                success: true,
+                orderId: 'ORD' + Date.now(),
+                tableNumber: this.currentTableNumber
+            };
 
             if (result.success) {
                 this.showOrderConfirmation(result.orderId, result.tableNumber);
@@ -538,13 +538,6 @@ class QRMenu {
     hideLoading() {
         this.isLoading = false;
     }
-
-    // Quick Request functionality methods should be implemented here as actual methods, for example:
-    setupQuickRequest() { /* ... */ }
-    sendQuickRequest() { /* ... */ }
-    showQuickRequestConfirmation() { /* ... */ }
-    getTableNumber() { /* ... */ }
-    notifyCashRegister() { /* ... */ }
 }
 
 // Initialize the QR Menu when the page loads
@@ -560,10 +553,129 @@ setInterval(() => {
     }
 }, 5000);
 
-// Move these methods inside the QRMenu class (above, before the closing brace of the class)
+
     // Quick Request functionality
-    // (PASTE these methods inside the QRMenu class, before the final closing brace of the class)
-    // setupQuickRequest(), sendQuickRequest(), showQuickRequestConfirmation(), getTableNumber(), notifyCashRegister()
+    setupQuickRequest() {
+        const quickRequestBtn = document.getElementById('quick-request-btn');
+        const quickRequestModal = new bootstrap.Modal(document.getElementById('quickRequestModal'));
+        const quickRequestConfirmModal = new bootstrap.Modal(document.getElementById('quickRequestConfirmModal'));
+        
+        // Open quick request modal
+        quickRequestBtn.addEventListener('click', () => {
+            quickRequestModal.show();
+        });
+        
+        // Handle quick item buttons
+        document.querySelectorAll('.quick-item-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const requestItem = e.target.dataset.item;
+                this.sendQuickRequest(requestItem);
+                quickRequestModal.hide();
+                this.showQuickRequestConfirmation(requestItem);
+            });
+        });
+        
+        // Handle custom request
+        document.getElementById('send-custom-request').addEventListener('click', () => {
+            const customText = document.getElementById('custom-request-text').value.trim();
+            if (customText) {
+                this.sendQuickRequest(customText);
+                quickRequestModal.hide();
+                this.showQuickRequestConfirmation(customText);
+                document.getElementById('custom-request-text').value = '';
+            } else {
+                alert('Please enter your custom request.');
+            }
+        });
+    }
+    
+    async sendQuickRequest(requestText) {
+        if (!this.currentTableNumber) {
+            this.showTableNumberModal();
+            return;
+        }
+
+        const requestData = {
+            tableNumber: this.currentTableNumber,
+            request: requestText,
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            // In production, send to Google Sheets
+            
+            const response = await fetch(`${this.apiUrl}?action=addQuickRequest`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            const result = await response.json();
+            if (!result.success) {
+                throw new Error('Failed to send request');
+            }
+            
+            
+            // For demo, just log the request
+            console.log('Quick Request Sent:', requestData);
+            
+            // Simulate notification to cash register
+            this.notifyCashRegister('quick_request', requestData);
+            
+        } catch (error) {
+            console.error('Error sending quick request:', error);
+            alert('Failed to send request. Please try again.');
+        }
+    }
+    
+    showQuickRequestConfirmation(requestText) {
+        document.getElementById('sent-request-text').textContent = requestText;
+        const confirmModal = new bootstrap.Modal(document.getElementById('quickRequestConfirmModal'));
+        
+        // Add success animation
+        setTimeout(() => {
+            const modalContent = document.querySelector('#quickRequestConfirmModal .modal-content');
+            modalContent.classList.add('success-animation');
+        }, 100);
+        
+        confirmModal.show();
+        
+        // Auto-close after 3 seconds
+        setTimeout(() => {
+            confirmModal.hide();
+        }, 3000);
+    }
+    
+    getTableNumber() {
+        // Get or generate table number
+        let tableNumber = localStorage.getItem('tableNumber');
+        if (!tableNumber) {
+            tableNumber = Math.floor(Math.random() * 50) + 1;
+            localStorage.setItem('tableNumber', tableNumber);
+        }
+        return tableNumber;
+    }
+    
+    notifyCashRegister(type, data) {
+        // Simulate real-time notification to cash register
+        const notification = {
+            type: type,
+            data: data,
+            timestamp: new Date().toISOString()
+        };
+        
+        // In production, this would use WebSockets or Server-Sent Events
+        console.log('Notification sent to cash register:', notification);
+        
+        // Store in localStorage for demo purposes
+        const notifications = JSON.parse(localStorage.getItem('cashRegisterNotifications') || '[]');
+        notifications.unshift(notification);
+        localStorage.setItem('cashRegisterNotifications', JSON.stringify(notifications.slice(0, 50)));
+    }
+}
+
 
 // Global functions for table number modal
 function setTableNumber() {

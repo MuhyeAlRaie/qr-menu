@@ -9,7 +9,7 @@ class NotificationSystem {
     }
 
     async fetchFromGoogleSheets(sheetName) {
-        const webAppUrl = "1YW7K0Kn_FnqmQZsvGucwgrG_RJek0YZ9bPDQDCE4yqA"; // Replace with your Web App URL
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbyeNom3iTnZ-1YwVFalozrt6bAw487sy5eifmiuMbXIesULfeErYBNk97WzsZiltf2EJg/exec"; // Replace with your Web App URL
         const url = `${webAppUrl}?sheet=${sheetName}`;
         try {
             const response = await fetch(url);
@@ -25,7 +25,7 @@ class NotificationSystem {
     }
 
     async appendToGoogleSheets(sheetName, data) {
-        const webAppUrl = "1YW7K0Kn_FnqmQZsvGucwgrG_RJek0YZ9bPDQDCE4yqA"; // Replace with your Web App URL
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbyeNom3iTnZ-1YwVFalozrt6bAw487sy5eifmiuMbXIesULfeErYBNk97WzsZiltf2EJg/exec"; // Replace with your Web App URL
         const url = `${webAppUrl}?sheet=${sheetName}`;
         try {
             const response = await fetch(url, {
@@ -48,7 +48,7 @@ class NotificationSystem {
     }
 
     async updateGoogleSheets(sheetName, row, data) {
-        const webAppUrl = "1YW7K0Kn_FnqmQZsvGucwgrG_RJek0YZ9bPDQDCE4yqA"; // Replace with your Web App URL
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbyeNom3iTnZ-1YwVFalozrt6bAw487sy5eifmiuMbXIesULfeErYBNk97WzsZiltf2EJg/exec"; // Replace with your Web App URL
         const url = `${webAppUrl}?sheet=${sheetName}&row=${row}`;
         try {
             const response = await fetch(url, {
@@ -71,7 +71,7 @@ class NotificationSystem {
     }
 
     async deleteFromGoogleSheets(sheetName, row) {
-        const webAppUrl = "1YW7K0Kn_FnqmQZsvGucwgrG_RJek0YZ9bPDQDCE4yqA"; // Replace with your Web App URL
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbyeNom3iTnZ-1YwVFalozrt6bAw487sy5eifmiuMbXIesULfeErYBNk97WzsZiltf2EJg/exec"; // Replace with your Web App URL
         const url = `${webAppUrl}?sheet=${sheetName}&row=${row}`;
         try {
             const response = await fetch(url, {
