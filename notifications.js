@@ -327,6 +327,32 @@ class NotificationSystem {
         document.getElementById("total-revenue").textContent = `$${totalRevenue.toFixed(2)}`;
         document.getElementById("avg-order").textContent = `$${avgOrder.toFixed(2)}`;
     }
+
+    // Mock implementation for local testing
+    static mockGoogleScriptRun(callback) {
+        return {
+            withSuccessHandler: function (successCallback) {
+                return {
+                    withFailureHandler: function () {
+                        return {
+                            fetchFromGoogleSheets: function (sheetName) {
+                                const mockData = sheetName === 'Orders' ? notificationSystem.generateSampleOrders() : notificationSystem.generateSampleQuickRequests();
+                                setTimeout(() => {
+                                    successCallback(mockData);
+                                }, 500);
+                            },
+                            appendToGoogleSheets: function (sheetName, data) {
+                                console.log(`Mock append to ${sheetName}:`, data);
+                                setTimeout(() => {
+                                    successCallback({ success: true });
+                                }, 500);
+                            }
+                        };
+                    }
+                };
+            }
+        };
+    }
 }
 
 const notificationSystem = new NotificationSystem();

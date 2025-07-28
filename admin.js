@@ -927,6 +927,46 @@ class AdminPanel {
     }
 }
 
+// Mock implementation for local testing
+if (!window.google) {
+    window.google = {
+        script: {
+            run: {
+                withSuccessHandler: function (callback) {
+                    return {
+                        withFailureHandler: function () {
+                            return {
+                                fetchMenuData: function () {
+                                    setTimeout(() => {
+                                        callback({
+                                            success: true,
+                                            data: adminPanel.generateSampleMenuData()
+                                        });
+                                    }, 500);
+                                },
+                                fetchOrdersData: function () {
+                                    setTimeout(() => {
+                                        callback({
+                                            success: true,
+                                            data: adminPanel.generateSampleOrdersData()
+                                        });
+                                    }, 500);
+                                },
+                                syncData: function () {
+                                    console.log('Mock sync data triggered');
+                                    setTimeout(() => {
+                                        callback({ success: true });
+                                    }, 500);
+                                }
+                            };
+                        }
+                    };
+                }
+            }
+        }
+    };
+}
+
 // Initialize admin panel
 let adminPanel;
 document.addEventListener('DOMContentLoaded', () => {

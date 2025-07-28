@@ -410,7 +410,7 @@ class QRMenu {
         }, 300);
     }
 
-    async placeOrder() {
+    checkout() {
         if (this.cart.length === 0) {
             alert('Your cart is empty!');
             return;
@@ -429,32 +429,25 @@ class QRMenu {
             customerNotes: ''
         };
 
-        try {
-            // In production, send to Google Sheets
-            const response = await fetch(this.apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=addOrder&data=${encodeURIComponent(JSON.stringify(orderData))}`
-            });
-            const result = await response.json();
-
-            if (result.success) {
-                this.showOrderConfirmation(result.orderId, result.tableNumber);
-                
-                // Send notification to cash register
-                this.sendOrderNotification(orderData);
-                
-                this.cart = [];
-                this.updateCartUI();
-                this.toggleCart();
-            } else {
-                alert('Error placing order. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error placing order:', error);
-            alert('Error placing order. Please try again.');
+        if (window.google && window.google.script && window.google.script.run) {
+            window.google.script.run
+                .withSuccessHandler((result) => {
+                    if (result.success) {
+                        this.showOrderConfirmation(result.orderId, result.tableNumber);
+                        this.cart = [];
+                        this.updateCartUI();
+                        this.toggleCart();
+                    } else {
+                        alert('Error placing order. Please try again.');
+                    }
+                })
+                .withFailureHandler((error) => {
+                    console.error('Error placing order:', error);
+                    alert('Error placing order. Please try again.');
+                })
+                .addOrder(orderData);
+        } else {
+            console.error('Google Apps Script environment not available.');
         }
     }
 
@@ -649,6 +642,57 @@ class QRMenu {
         // Update the cart UI to reflect the current state
         this.updateCartUI();
     }
+
+    showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+}
+
+
+// Mock implementation for local testing
+if (!window.google) {
+    window.google = {
+        script: {
+            run: {
+                withSuccessHandler: function (callback) {
+                    return {
+                        withFailureHandler: function () {
+                            return {
+                                fetchMenuData: function () {
+                                    setTimeout(() => {
+                                        callback({
+                                            success: true,
+                                            data: qrMenu.generateSampleData()
+                                        });
+                                    }, 500);
+                                },
+                                addOrder: function (orderData) {
+                                    console.log('Mock order sent:', orderData);
+                                    setTimeout(() => {
+                                        callback({ success: true, orderId: 'MOCK123', tableNumber: orderData.tableNumber });
+                                    }, 500);
+                                },
+                                addQuickRequest: function (requestData) {
+                                    console.log('Mock quick request sent:', requestData);
+                                    setTimeout(() => {
+                                        callback({ success: true });
+                                    }, 500);
+                                }
+                            };
+                        }
+                    };
+                }
+            }
+        }
+    };
 }
 
 
