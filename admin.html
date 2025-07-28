@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - QR Menu Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="admin-style.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h3>🍽️ QR Menu Admin</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-section="dashboard">
+                    <span class="menu-icon">📊</span>
+                    Dashboard
+                </li>
+                <li class="menu-item" data-section="menu-management">
+                    <span class="menu-icon">📋</span>
+                    Menu Management
+                </li>
+                <li class="menu-item" data-section="orders">
+                    <span class="menu-icon">🛒</span>
+                    Orders
+                </li>
+                <li class="menu-item" data-section="analytics">
+                    <span class="menu-icon">📈</span>
+                    Analytics
+                </li>
+                <li class="menu-item" data-section="settings">
+                    <span class="menu-icon">⚙️</span>
+                    Settings
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="sync-data">
+                        🔄 Sync Data
+                    </button>
+                    <button class="btn btn-success" id="add-item">
+                        ➕ Add Item
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="total-items">0</div>
+                            <div class="stat-label">Menu Items</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🛒</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="total-orders-today">0</div>
+                            <div class="stat-label">Orders Today</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="revenue-today">$0</div>
+                            <div class="stat-label">Revenue Today</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="popular-category">-</div>
+                            <div class="stat-label">Popular Category</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Recent Orders</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="recent-orders">
+                                    <div class="text-center text-muted">No recent orders</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary" onclick="adminPanel.exportMenu()">
+                                        📤 Export Menu
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="adminPanel.importMenu()">
+                                        📥 Import Menu
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="adminPanel.backupData()">
+                                        💾 Backup Data
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="adminPanel.generateQR()">
+                                        📱 Generate QR Code
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Menu Management Section -->
+            <section id="menu-management-section" class="content-section">
+                <div class="menu-filters mb-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <select class="form-select" id="category-filter">
+                                <option value="">All Categories</option>
+                                <option value="Hot Drinks">Hot Drinks</option>
+                                <option value="Cold Drinks">Cold Drinks</option>
+                                <option value="Frappe">Frappe</option>
+                                <option value="Refresher">Refresher</option>
+                                <option value="Smoothies">Smoothies</option>
+                                <option value="Mojito">Mojito</option>
+                                <option value="Soft Drinks">Soft Drinks</option>
+                                <option value="Milk Shake">Milk Shake</option>
+                                <option value="Dessert">Dessert</option>
+                                <option value="Food">Food</option>
+                                <option value="Hookah">Hookah</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="search-items" placeholder="Search items...">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="availability-filter">
+                                <option value="">All Items</option>
+                                <option value="true">Available</option>
+                                <option value="false">Unavailable</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-items-grid" id="menu-items-grid">
+                    <!-- Menu items will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Orders Section -->
+            <section id="orders-section" class="content-section">
+                <div class="orders-filters mb-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <select class="form-select" id="order-status-filter">
+                                <option value="">All Orders</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="ready">Ready</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" class="form-control" id="order-date-filter">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="search-orders" placeholder="Search orders...">
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-primary w-100" onclick="adminPanel.refreshOrders()">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="orders-list" id="orders-list">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics-section" class="content-section">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Sales by Category</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="category-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Daily Revenue</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="revenue-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="content-section">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Restaurant Settings</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="restaurant-settings">
+                                    <div class="mb-3">
+                                        <label class="form-label">Restaurant Name</label>
+                                        <input type="text" class="form-control" id="restaurant-name" value="Our Restaurant">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Contact Number</label>
+                                        <input type="tel" class="form-control" id="contact-number" value="+1 234 567 8900">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Address</label>
+                                        <textarea class="form-control" id="address" rows="3">123 Main Street, City, State 12345</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Operating Hours</label>
+                                        <input type="text" class="form-control" id="operating-hours" value="9:00 AM - 10:00 PM">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>System Configuration</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="system-settings">
+                                    <div class="mb-3">
+                                        <label class="form-label">Google Sheets ID</label>
+                                        <input type="text" class="form-control" id="sheets-id" value="1YW7K0Kn_FnqmQZsvGucwgrG_RJek0YZ9bPDQDCE4yqA">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Apps Script URL</label>
+                                        <input type="url" class="form-control" id="script-url" placeholder="https://script.google.com/...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="auto-sync" checked>
+                                            <label class="form-check-label" for="auto-sync">
+                                                Auto-sync with Google Sheets
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="notifications-enabled" checked>
+                                            <label class="form-check-label" for="notifications-enabled">
+                                                Enable order notifications
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Configuration</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add/Edit Item Modal -->
+    <div class="modal fade" id="itemModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="itemModalTitle">Add New Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="item-form">
+                        <input type="hidden" id="item-id">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Item Name *</label>
+                                    <input type="text" class="form-control" id="item-name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Category *</label>
+                                    <select class="form-select" id="item-category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Hot Drinks">Hot Drinks</option>
+                                        <option value="Cold Drinks">Cold Drinks</option>
+                                        <option value="Frappe">Frappe</option>
+                                        <option value="Refresher">Refresher</option>
+                                        <option value="Smoothies">Smoothies</option>
+                                        <option value="Mojito">Mojito</option>
+                                        <option value="Soft Drinks">Soft Drinks</option>
+                                        <option value="Milk Shake">Milk Shake</option>
+                                        <option value="Dessert">Dessert</option>
+                                        <option value="Food">Food</option>
+                                        <option value="Hookah">Hookah</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="item-description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ingredients</label>
+                            <input type="text" class="form-control" id="item-ingredients" placeholder="Comma-separated ingredients">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Base Price *</label>
+                                    <input type="number" class="form-control" id="item-price" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Image URL</label>
+                                    <div class="input-group">
+                                        <input type="url" class="form-control" id="item-image" placeholder="https://...">
+                                        <button type="button" class="btn btn-outline-primary" id="upload-image-btn">
+                                            📷 Upload Image
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Upload an image or enter a URL manually</div>
+                                    <div id="image-preview" class="mt-2" style="display: none;">
+                                        <img id="preview-img" src="" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px; border: 1px solid #ddd;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Size Variations (JSON format)</label>
+                            <textarea class="form-control" id="item-sizes" rows="3" placeholder='{"Small": 5.99, "Medium": 7.99, "Large": 9.99}'></textarea>
+                            <div class="form-text">Optional: Define different sizes and prices in JSON format</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="item-available" checked>
+                                <label class="form-check-label" for="item-available">
+                                    Available for ordering
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="adminPanel.saveItem()">Save Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Cloudinary SDK -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    <!-- Admin Panel JS -->
+    <script src="admin.js"></script>
+</body>
+</html>
+
