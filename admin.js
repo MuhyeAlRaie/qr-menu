@@ -130,38 +130,35 @@ class AdminPanel {
 
     async loadMenuData() {
         try {
-            // For demo purposes, we'll use sample data
-            // In production, uncomment the API call below
-            const response = await fetch(`${this.apiUrl}?action=getMenu`);
-            const data = await response.json();
-            this.menuData = data.success ? data.data : [];
-            
-            
-            // Sample data for demonstration
-            this.menuData = this.generateSampleMenuData();
-            
+            const menuItems = await this.fetchFromGoogleSheets("Menu");
+            this.menuData = menuItems.map(item => ({
+                id: item.ID,
+                name: item.Name,
+                category: item.Category,
+                price: parseFloat(item.Price),
+                availability: item.Availability === "true",
+                imageUrl: item.ImageURL
+            }));
+            this.renderMenuItems();
         } catch (error) {
-            console.error('Error loading menu data:', error);
-            this.menuData = this.generateSampleMenuData();
+            console.error("Error loading menu data:", error);
         }
     }
 
     async loadOrdersData() {
         try {
-            // For demo purposes, we'll use sample data
-            // In production, uncomment the API call below
-            
-            const response = await fetch(`${this.apiUrl}?action=getOrders`);
-            const data = await response.json();
-            this.ordersData = data.success ? data.data : [];
-            
-            
-            // Sample data for demonstration
-            this.ordersData = this.generateSampleOrdersData();
-            
+            const orders = await this.fetchFromGoogleSheets("Orders");
+            this.ordersData = orders.map(order => ({
+                id: order.ID,
+                tableNumber: order["Table Number"],
+                items: JSON.parse(order.Items),
+                total: parseFloat(order.Total),
+                timestamp: new Date(order.Timestamp),
+                status: order.Status
+            }));
+            this.renderOrders();
         } catch (error) {
-            console.error('Error loading orders data:', error);
-            this.ordersData = this.generateSampleOrdersData();
+            console.error("Error loading orders data:", error);
         }
     }
 

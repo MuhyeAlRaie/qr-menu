@@ -375,6 +375,11 @@ class QRMenu {
         const cartItems = document.getElementById('cart-items');
         const cartTotal = document.getElementById('cart-total');
 
+        if (!cartCount || !cartItems || !cartTotal) {
+            console.error('Cart UI elements are missing. Ensure the cart UI is properly initialized.');
+            return;
+        }
+
         const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
         const totalPrice = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
@@ -449,12 +454,13 @@ class QRMenu {
             
             
             // Simulated response
+            /*
             const result = {
                 success: true,
                 orderId: 'ORD' + Date.now(),
                 tableNumber: this.currentTableNumber
             };
-
+            */
             if (result.success) {
                 this.showOrderConfirmation(result.orderId, result.tableNumber);
                 
@@ -538,34 +544,17 @@ class QRMenu {
     hideLoading() {
         this.isLoading = false;
     }
-}
-
-// Initialize the QR Menu when the page loads
-let qrMenu;
-document.addEventListener('DOMContentLoaded', () => {
-    qrMenu = new QRMenu();
-});
-
-// Auto-rotate carousel every 5 seconds
-setInterval(() => {
-    if (qrMenu && !qrMenu.isLoading) {
-        qrMenu.rotateCarousel(1);
-    }
-}, 5000);
-
 
     // Quick Request functionality
     setupQuickRequest() {
         const quickRequestBtn = document.getElementById('quick-request-btn');
         const quickRequestModal = new bootstrap.Modal(document.getElementById('quickRequestModal'));
         const quickRequestConfirmModal = new bootstrap.Modal(document.getElementById('quickRequestConfirmModal'));
-        
-        // Open quick request modal
+
         quickRequestBtn.addEventListener('click', () => {
             quickRequestModal.show();
         });
-        
-        // Handle quick item buttons
+
         document.querySelectorAll('.quick-item-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const requestItem = e.target.dataset.item;
@@ -574,8 +563,7 @@ setInterval(() => {
                 this.showQuickRequestConfirmation(requestItem);
             });
         });
-        
-        // Handle custom request
+
         document.getElementById('send-custom-request').addEventListener('click', () => {
             const customText = document.getElementById('custom-request-text').value.trim();
             if (customText) {
@@ -602,28 +590,21 @@ setInterval(() => {
         };
 
         try {
-            // In production, send to Google Sheets
-            
             const response = await fetch(`${this.apiUrl}?action=addQuickRequest`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(requestData)
             });
-            
+
             const result = await response.json();
             if (!result.success) {
                 throw new Error('Failed to send request');
             }
-            
-            
-            // For demo, just log the request
+
             console.log('Quick Request Sent:', requestData);
-            
-            // Simulate notification to cash register
             this.notifyCashRegister('quick_request', requestData);
-            
         } catch (error) {
             console.error('Error sending quick request:', error);
             alert('Failed to send request. Please try again.');
@@ -633,23 +614,20 @@ setInterval(() => {
     showQuickRequestConfirmation(requestText) {
         document.getElementById('sent-request-text').textContent = requestText;
         const confirmModal = new bootstrap.Modal(document.getElementById('quickRequestConfirmModal'));
-        
-        // Add success animation
+
         setTimeout(() => {
             const modalContent = document.querySelector('#quickRequestConfirmModal .modal-content');
             modalContent.classList.add('success-animation');
         }, 100);
-        
+
         confirmModal.show();
-        
-        // Auto-close after 3 seconds
+
         setTimeout(() => {
             confirmModal.hide();
         }, 3000);
     }
-    
+
     getTableNumber() {
-        // Get or generate table number
         let tableNumber = localStorage.getItem('tableNumber');
         if (!tableNumber) {
             tableNumber = Math.floor(Math.random() * 50) + 1;
@@ -657,22 +635,30 @@ setInterval(() => {
         }
         return tableNumber;
     }
-    
+
     notifyCashRegister(type, data) {
-        // Simulate real-time notification to cash register
         const notification = {
             type: type,
             data: data,
             timestamp: new Date().toISOString()
         };
-        
-        // In production, this would use WebSockets or Server-Sent Events
+
         console.log('Notification sent to cash register:', notification);
-        
-        // Store in localStorage for demo purposes
-        const notifications = JSON.parse(localStorage.getItem('cashRegisterNotifications') || '[]');
-        notifications.unshift(notification);
-        localStorage.setItem('cashRegisterNotifications', JSON.stringify(notifications.slice(0, 50)));
+    }
+
+    setupCart() {
+        // Ensure the cart UI is created
+        this.createCartUI();
+
+        // Initialize cart-related event listeners
+        const cartToggle = document.querySelector('.cart-toggle');
+        const cartContainer = document.getElementById('cart-container');
+
+        if (cartToggle && cartContainer) {
+            cartToggle.addEventListener('click', () => {
+                cartContainer.classList.toggle('open');
+            });
+        }
     }
 }
 
@@ -688,4 +674,11 @@ function setTableNumber() {
 document.addEventListener('DOMContentLoaded', () => {
     window.qrMenu = new QRMenu();
 });
+
+// Auto-rotate carousel every 5 seconds
+setInterval(() => {
+    if (qrMenu && !qrMenu.isLoading) {
+        qrMenu.rotateCarousel(1);
+    }
+}, 5000);
 
