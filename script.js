@@ -660,13 +660,32 @@ class QRMenu {
             });
         }
     }
+
+    showNotification(message, type) {
+        const notificationContainer = document.createElement('div');
+        notificationContainer.className = `notification ${type}`;
+        notificationContainer.textContent = message;
+
+        document.body.appendChild(notificationContainer);
+
+        setTimeout(() => {
+            notificationContainer.classList.add('visible');
+        }, 10);
+
+        setTimeout(() => {
+            notificationContainer.classList.remove('visible');
+            setTimeout(() => {
+                notificationContainer.remove();
+            }, 300);
+        }, 3000);
+    }
 }
 
 
 // Global functions for table number modal
 function setTableNumber() {
-    if (window.qrMenu) {
-        window.qrMenu.setTableNumber();
+    if (window.qMenu) {
+        window.qMenu.setTableNumber();
     }
 }
 
